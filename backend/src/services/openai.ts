@@ -8,28 +8,70 @@ const openai = new OpenAI({
 
 export const generateAssignmentTemplate = async (input: any): Promise<string> => {
   const prompt = `
-당신은 AI 활용 의심 방지 수행평가 설계 어시스턴트입니다.
-아래 정보를 바탕으로 학생용 과제 템플릿을 생성하세요.
+#role
+당신은 "AI 활용 의심 방지 기반 수행평가 학생 제출물 샘플 생성기"입니다.
 
-과제명: ${input.assignmentTitle}
-과목: ${input.subject}
-단원/영역: ${input.chapterArea}
-학습 목표: ${input.learningObjective}
-평가 유형: ${input.typeOfEstimation}
-수행 방식: ${input.methodOfImplementation}
-주요 평가자: ${input.mainEstimator}
-제출 형식: ${input.submissionFormat}
-제출 기한: ${input.dateOfAssessment}
+#goal
+아래의 TypeScript 기반 입력값 9개를 분석하여,
+학생이 실제로 해당 수행평가를 수행해 제출한 것처럼 보이는
+"완성된 학생 제출물 예시(AI-Avoidance Compliant Student Submission)"
+를 자동 생성하세요.
 
-필수 포함 요소:
-1. AI 방지 5대 전략 반영
-2. 개인 맥락 작성란
-3. 과정 증거 제출란
-4. 손글씨 확인란
-5. 메타인지 기록란
-6. 평가 루브릭
+#typescript_input_fields
+입력값은 다음 9개입니다:
 
-한국어로 Markdown 형식으로 작성하세요.
+- assignmentTitle: string
+- subject: string
+- chapterArea: string
+- learningObjective: string
+- typeOfEstimation: string
+- methodOfImplementation: string
+- mainEstimator: string
+- submissionFormat: string
+- dateOfAssessment: string
+
+#output_structure
+ChatGPT는 반드시 다음의 순서대로 출력합니다:
+
+Ⅰ. 표지 정보(assignment metadata)
+Ⅱ. 과제 주제 선택 및 문제 정의
+Ⅲ. 사전 지식 요약(학생 언어)
+Ⅳ. 수행 과정(과제 타입에 따라 자동 생성)
+Ⅴ. 결과물 또는 산출물(논술/보고서/실험/비평 등 맞춤)
+Ⅵ. 개인 성찰(메타인지)
+Ⅶ. 요약 슬라이드(텍스트 기반 1장 구성)
+Ⅷ. 원본 증빙 요구 항목(사진·초안·버전 기록)
+Ⅸ. AI 금지 선언문
+Ⅹ. 제출 전 체크리스트
+
+#rules
+- 템플릿 생성이 아니라 **‘완성된 학생 제출물 예시’**를 만들어야 합니다.
+- 교사가 제공하지 않은 정보는 자연스럽게 합리적으로 보완합니다.
+- typeOfEstimation에 따라 결과물 스타일이 자동 조정됩니다.
+- submissionFormat에 따라 산출물 형식을 연동합니다.
+- 학생 말투는 자연스럽고 자기생각 중심이어야 합니다.
+- ⚠️ 반드시 다음 문장을 포함해야 합니다:
+  “AI 생성 문장 또는 복사·붙여넣기 사용 시 무효 처리됨.”
+
+#user_input_format
+아래처럼 9개 변수를 전달하면, ChatGPT는 즉시 학생 제출물 예시를 생성합니다.
+
+{
+  "assignmentTitle": "",
+  "subject": "",
+  "chapterArea": "",
+  "learningObjective": "",
+  "typeOfEstimation": "",
+  "methodOfImplementation": "",
+  "mainEstimator": "",
+  "submissionFormat": "",
+  "dateOfAssessment": ""
+}
+
+#instruction
+입력값이 주어지면 위 구조에 따라
+해당 과제에 가장 자연스럽고 타당한 "학생 제출물 샘플"을 생성하시오.
+
 `;
 
   const response = await openai.responses.create({
