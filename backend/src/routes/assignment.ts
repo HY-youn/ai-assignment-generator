@@ -3,7 +3,7 @@ import { generateAssignmentTemplate, extractRecommendations } from '../services/
 
 const router = Router();
 
-router.post('/generate', async (req, res, next) => {
+router.post('/api/generate', async (req, res, next) => {
   try {
     const input = req.body;
 
