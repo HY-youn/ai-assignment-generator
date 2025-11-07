@@ -1,4 +1,6 @@
 import OpenAI from 'openai';
+import { config } from "dotenv";
+config();
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -30,13 +32,13 @@ export const generateAssignmentTemplate = async (input: any): Promise<string> =>
 한국어로 Markdown 형식으로 작성하세요.
 `;
 
-  const completion = await openai.chat.completions.create({
+  const response = await openai.responses.create({
     model: 'gpt-4o-mini',
-    messages: [{ role: 'user', content: prompt }],
+    input: [{ role: 'user', content: prompt }],
     temperature: 0.7,
   });
-
-  return completion.choices[0].message.content || '';
+  const output = response.output_text;
+  return output || '';
 };
 
 export const extractRecommendations = (template: string): string[] => {
