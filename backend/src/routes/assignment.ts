@@ -2,8 +2,7 @@ import { Router } from 'express';
 import { generateAssignmentTemplate, extractRecommendations } from '../services/openai.js';
 
 const router = Router();
-
-router.post('/api/generate', async (req, res, next) => {
+router.post('/generate', async (req, res, next) => {
   try {
     const input = req.body;
 

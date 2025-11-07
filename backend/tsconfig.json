@@ -1,15 +1,14 @@
- {
- "compilerOptions": {
-    "target": "ES2022",
+{
+  "compilerOptions": {
+    "target": "ES2020",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "dist",
-    "strict": true,
+    "rootDir": "src",
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    // ↓ TS5에서 이게 true면 CJS 파일에 import를 금지함. 꺼두자.
-    "verbatimModuleSyntax": false
-    // (혹은 아예 이 키를 제거해도 됨)
+    "strict": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

@@ -6,29 +6,37 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const generateAssignmentTemplate = async (input: any): Promise<string> => {
+export const generateAssignmentTemplate = async (input: {
+  assignmentTitle: string;
+  subject: string;
+  chapterArea: string;
+  learningObjective: string;
+  typeOfEstimation: string;
+  methodOfImplementation: string;
+  mainEstimator: string;
+  submissionFormat: string;
+  dateOfAssessment: string;
+}): Promise<string> => {
+  // 1) 방어적 보정(오타/공백)
+  const clean = {
+    ...input,
+    typeOfEstimation: (input.typeOfEstimation || '').replace(/\s+/g, ''),
+    submissionFormat: input.submissionFormat?.trim(),
+  };
+
+  // 2) 입력 JSON을 프롬프트에 "직접" 주입
+  const userJSON = JSON.stringify(clean, null, 2);
   const prompt = `
 #role
 당신은 "AI 활용 의심 방지 기반 수행평가 학생 제출물 샘플 생성기"입니다.
+
+
 
 #goal
 아래의 TypeScript 기반 입력값 9개를 분석하여,
 학생이 실제로 해당 수행평가를 수행해 제출한 것처럼 보이는
 "완성된 학생 제출물 예시(AI-Avoidance Compliant Student Submission)"
 를 자동 생성하세요.
-
-#typescript_input_fields
-입력값은 다음 9개입니다:
-
-- assignmentTitle: string
-- subject: string
-- chapterArea: string
-- learningObjective: string
-- typeOfEstimation: string
-- methodOfImplementation: string
-- mainEstimator: string
-- submissionFormat: string
-- dateOfAssessment: string
 
 #output_structure
 ChatGPT는 반드시 다음의 순서대로 출력합니다:
@@ -55,18 +63,10 @@ ChatGPT는 반드시 다음의 순서대로 출력합니다:
 
 #user_input_format
 아래처럼 9개 변수를 전달하면, ChatGPT는 즉시 학생 제출물 예시를 생성합니다.
+할당받은 변수는 다음과 같습니다.
+  assignmentTitle,subject,chapterArea,learningObjective,typeOfEstimation,methodOfImplementation,mainEstimator,submissionFormat,dateOfAssessment
 
-{
-  "assignmentTitle": "",
-  "subject": "",
-  "chapterArea": "",
-  "learningObjective": "",
-  "typeOfEstimation": "",
-  "methodOfImplementation": "",
-  "mainEstimator": "",
-  "submissionFormat": "",
-  "dateOfAssessment": ""
-}
+${userJSON}
 
 #instruction
 입력값이 주어지면 위 구조에 따라
@@ -75,9 +75,8 @@ ChatGPT는 반드시 다음의 순서대로 출력합니다:
 `;
 
   const response = await openai.responses.create({
-    model: 'gpt-4o-mini',
-    input: [{ role: 'user', content: prompt }],
-    temperature: 0.7,
+    model: 'gpt-5',
+    input: prompt,
   });
   const output = response.output_text;
   return output || '';
